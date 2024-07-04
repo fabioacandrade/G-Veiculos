@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,65 +27,116 @@ public class VeiculoService {
     @Autowired
     private AdminRepo adminRepo;
 
-    public void saveDetails(VeiculoRequest veiculoRequest){
-        Optional<Proprietario> proprietario = proprietarioRepo.findById(veiculoRequest.getProprietario());
-        Optional<Admin> admin = adminRepo.findById(veiculoRequest.getAdmin());
+    public Long saveDetails(VeiculoRequest veiculoRequest) throws Exception {
 
-        Veiculo veiculo = new Veiculo();
-        veiculo.setCor(veiculoRequest.getCor());
-        veiculo.setAno(veiculoRequest.getAno());
-        veiculo.setHoraEntrada(LocalDateTime.now());
-        veiculo.setPlaca(veiculoRequest.getPlaca());
-        veiculo.setModelo(veiculoRequest.getModelo());
-        veiculo.setTipo(veiculoRequest.getTipo());
+        try {
+            Optional<Proprietario> proprietario = proprietarioRepo.findByCpf(veiculoRequest.getProprietarioCPF());
+            Optional<Admin> admin = adminRepo.findById(veiculoRequest.getAdmin());
 
-        if(admin.isPresent()){
-            veiculo.setAdmin(admin.get());
-        }
+            Veiculo veiculo = new Veiculo();
+            veiculo.setCor(veiculoRequest.getCor());
+            veiculo.setAno(veiculoRequest.getAno());
+            veiculo.setHoraEntrada(LocalDateTime.now());
+            veiculo.setPlaca(veiculoRequest.getPlaca());
+            veiculo.setModelo(veiculoRequest.getModelo());
+            veiculo.setTipo(veiculoRequest.getTipo());
+            veiculo.setEstacionado(veiculoRequest.isEstacionado());
+            veiculo.setMarca(veiculoRequest.getMarca());
 
-        if(proprietario.isPresent()){
-            veiculo.setProprietario(proprietario.get());
-        }
+            if (admin.isPresent()) {
+                veiculo.setAdmin(admin.get());
+            } else {
+                throw new Exception("Admin not found");
+            }
 
-        veiculoRepo.save(veiculo);
+            if (proprietario.isPresent()) {
+                veiculo.setProprietario(proprietario.get());
+            } else {
+                throw new Exception("Proprietario not found");
+            }
 
-    }
+            Veiculo save = veiculoRepo.save(veiculo);
 
-    public List<Veiculo> getAllDetails(){
-        return veiculoRepo.findAll();
-    }
+            return save.getId();
 
-    public Veiculo getVeiculoById(Long id){
-        return veiculoRepo.findById(id).orElse(null);
-    }
-
-    public Veiculo getVeiculoByPlaca(String placa){
-        return veiculoRepo.findByPlaca(placa);
-    }
-
-    public Veiculo updateVeiculo(Veiculo veiculo){
-        Veiculo veiculoUpdated = veiculoRepo.findById(veiculo.getId()).orElse(null);
-        if(veiculoUpdated != null){
-            veiculoUpdated.setPlaca(veiculo.getPlaca());
-            veiculoUpdated.setModelo(veiculo.getModelo());
-            veiculoUpdated.setAno(veiculo.getAno());
-            veiculoRepo.save(veiculoUpdated);
-            System.out.println("Updated " + veiculoUpdated.getPlaca());
-            return veiculoUpdated;
-        }
-        return null;
-    }
-
-    public String deleteVeiculo(Long id){
-        if(veiculoRepo.existsById(id)) {
-            veiculoRepo.deleteById(id);
-            return "Deletado " + id;
-        } else {
-            return "Veículo Não Existente " + id;
+        } catch (Exception e) {
+            throw new RuntimeException("Error saving vehicle details: " + e.getMessage());
         }
     }
 
-    public Proprietario getProprietarioById(int id){
-        return veiculoRepo.findByProprietarioId(id);
+
+    public List<Veiculo> getAllDetails() throws Exception {
+        try {
+            return veiculoRepo.findAll();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error getting all Vehicle Details " + e.getMessage());
+        }
+
+    }
+
+    public Veiculo getVeiculoByPlaca(String placa) throws Exception{
+        Veiculo veiculo = veiculoRepo.findByPlaca(placa);
+        if(veiculo == null) {
+            throw new Exception("Veículo não encontrado para a placa");
+        }
+        return veiculo;
+    }
+
+
+    public Proprietario getProprietarioByPlaca(String placa) throws Exception {
+
+        Veiculo veiculo = veiculoRepo.findByPlaca(placa);
+        Proprietario proprietario = veiculo.getProprietario();
+
+        if(proprietario == null) {
+            throw new Exception("Proprietário não encontrado!");
+        }
+
+        return proprietario;
+    }
+
+    public List<Veiculo> getEstacionados() throws Exception {
+        List<Veiculo> veiculos = veiculoRepo.findAll();
+        if(veiculos.isEmpty()){
+            throw new Exception("Nenhum veículo cadastrado!");
+        }
+        List<Veiculo> veiculosEstacionados = new ArrayList<>();
+
+        for(Veiculo veiculo : veiculos){
+            if(veiculo.isEstacionado()){
+                veiculosEstacionados.add(veiculo);
+            }
+        }
+
+        if(veiculosEstacionados.isEmpty()){
+            throw new Exception("Nenhum veículo estacionado!");
+        }
+
+        return veiculosEstacionados;
+
+    }
+
+    public Long marcarSaida(Long id) throws Exception {
+        Optional<Veiculo> veiculo = veiculoRepo.findById(id);
+        if(veiculo.isPresent()) {
+            Veiculo veiculoSaida = veiculo.get();
+            veiculoSaida.setEstacionado(false);
+            veiculoRepo.save(veiculoSaida);
+            return veiculoSaida.getId();
+        }
+        throw new Exception("Veiculo não encontrado");
+    }
+
+    public Long estacionar(Long id) throws Exception {
+        Optional<Veiculo> veiculo = veiculoRepo.findById(id);
+        if(veiculo.isPresent()) {
+            Veiculo veiculoSaida = veiculo.get();
+            veiculoSaida.setEstacionado(true);
+            veiculoSaida.setHoraEntrada(LocalDateTime.now());
+            veiculoRepo.save(veiculoSaida);
+            return veiculoSaida.getId();
+        }
+        throw new Exception("Veiculo não encontrado");
     }
 }

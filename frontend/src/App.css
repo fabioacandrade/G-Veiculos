@@ -1,0 +1,44 @@
+.body{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    
+}
+
+.content{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-top: 10px;
+
+}
+
+.busca{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 30%;
+    margin-top: 100000px;
+}
+
+.form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    margin-top: 10px;
+}
+
+.lista{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    margin-top: 10px;
+}
+
+.Box{
+    display: flex;
+    flex-direction: column;
+    
+}

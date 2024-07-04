@@ -1,0 +1,58 @@
+/* buscaVeiculo.css */
+.text-field {
+    margin-bottom: 1600px;
+}
+
+.search-button {
+    margin-top: 16px;
+}
+
+.list-container {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.error {
+    color: red;
+}
+
+.proprietario {
+    margin-top: 20px;
+}
+
+.help {
+    margin-top: 10px;
+    color: green;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Espaço entre os botões */
+    align-items: center;
+}
+
+.button-container .button, 
+.button-container .MuiButton-root {
+    width: 100%; /* Certifique-se de que os botões preencham a largura do contêiner */
+    box-sizing: border-box; /* Inclui padding e border no cálculo do width */
+}
+
+/* Certifique-se de que os estilos Material-UI sejam aplicados corretamente */
+.button-container .MuiButton-containedPrimary {
+    background-color: blue; /* Ajuste a cor conforme necessário */
+    color: white;
+}
+
+/* Adicionando estilos para hover e foco */
+.button-container .MuiButton-containedPrimary:hover {
+    background-color: darkblue; /* Ajuste a cor conforme necessário */
+}
+
+/* Adicionando margem inferior ao campo de busca */
+.MuiTextField-root {
+    margin-bottom: 16px; /* Espaço entre a barra de pesquisa e o botão de buscar */
+}

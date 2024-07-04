@@ -18,37 +18,48 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/veiculo")
-@CrossOrigin(origins = "*") // Possibilidade da API ser acessivel por várias aplicacoes
+@CrossOrigin(origins = "http://localhost:3000")
 public class VeiculoController {
 
     @Autowired
     private VeiculoService veiculoService;
 
     @PostMapping
-    public ResponseEntity<?> cadastrarVeiculo(@Valid @RequestBody VeiculoRequest veiculoRequest, BindingResult result) {
-        if (result.hasErrors()) {
-            return ResponseEntity.badRequest().body(result.getAllErrors());
-        }
-        veiculoService.saveDetails(veiculoRequest);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Long> cadastrarVeiculo(@Valid @RequestBody VeiculoRequest veiculoRequest, BindingResult result) throws Exception {
+        Long id = veiculoService.saveDetails(veiculoRequest);
+        return ResponseEntity.ok(id);
     }
 
     @GetMapping
-    public List<Veiculo> listarVeiculos(){
-        return veiculoService.getAllDetails();
+    public ResponseEntity<List<Veiculo>> listarVeiculos() throws Exception {
+        return ResponseEntity.ok(veiculoService.getAllDetails());
     }
 
-    @GetMapping("/{placa}")
-    public Veiculo buscarVeiculoPorPlaca(@PathVariable String placa){
-        return veiculoService.getVeiculoByPlaca(placa);
+    @GetMapping("/placa/{placa}")
+    public ResponseEntity<Veiculo> buscarVeiculoPorPlaca(@PathVariable String placa) throws Exception{
+        return ResponseEntity.ok(veiculoService.getVeiculoByPlaca(placa));
     }
 
-    @GetMapping("/{proprietarioId}")
-    public Proprietario buscarProprietarioPorId(@PathVariable int proprietarioId){
-        Proprietario proprietario = new Proprietario();
-        proprietario = veiculoService.getProprietarioById(proprietarioId);
-        System.out.println(proprietario.getNome());
-        return proprietario;
+    @GetMapping("/proprietario/{placa}")
+    public ResponseEntity<Proprietario> buscarProprietarioPorPlaca(@PathVariable String placa) throws Exception {
+        return ResponseEntity.ok(veiculoService.getProprietarioByPlaca(placa));
     }
+
+    @GetMapping("/listaEstacionados")
+    public ResponseEntity<List<Veiculo>> listarEstacionados() throws Exception {
+        return ResponseEntity.ok(veiculoService.getEstacionados());
+    }
+
+    @PutMapping("/marcarSaida/{id}")
+    public ResponseEntity<Long>  marcarSaida(@PathVariable Long id) throws Exception {
+        return ResponseEntity.ok(veiculoService.marcarSaida(id));
+    }
+
+    @PutMapping("/estacionar/{id}")
+    public ResponseEntity<Long>  estacionar(@PathVariable Long id) throws Exception {
+        return ResponseEntity.ok(veiculoService.estacionar(id));
+    }
+
+
 }
 

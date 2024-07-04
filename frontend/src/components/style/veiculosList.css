@@ -1,0 +1,29 @@
+.Par{
+    background-color: #E3F2FD;
+}
+.Impar{
+    background-color: #BBDEFB;
+}
+
+.table-head{
+    background-color: #2196F3;
+}
+
+.Paper{
+    background-color: #E3F2FD;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 10px;
+    justify-self: end;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+}
+
+.valor-hora {
+    display: flex;
+    align-items: center;
+}

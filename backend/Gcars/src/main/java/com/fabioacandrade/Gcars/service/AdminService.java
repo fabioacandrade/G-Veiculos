@@ -6,17 +6,20 @@ import com.fabioacandrade.Gcars.repository.AdminRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class AdminService {
 
     @Autowired
     private AdminRepo adminRepo;
 
-    public void save(Admin admin) {
-        adminRepo.save(admin);
+    public Long save(Admin admin) throws Exception {
+        Admin adminSaved = adminRepo.save(admin);
+        return adminSaved.getId();
     }
 
-    public Admin findByNome(String nome) {
+    public Optional<Admin> findByNome(String nome) {
         return adminRepo.findByNome(nome);
     }
 

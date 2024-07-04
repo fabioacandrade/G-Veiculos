@@ -1,0 +1,78 @@
+package com.fabioacandrade.Gcars.controller;
+
+
+import com.fabioacandrade.Gcars.dto.veiculo.request.AuthResponseDto;
+import com.fabioacandrade.Gcars.dto.veiculo.request.LoginDto;
+import com.fabioacandrade.Gcars.dto.veiculo.request.RegisterDto;
+import com.fabioacandrade.Gcars.model.Admin;
+import com.fabioacandrade.Gcars.model.Role;
+import com.fabioacandrade.Gcars.repository.AdminRepo;
+import com.fabioacandrade.Gcars.repository.RoleRepository;
+import com.fabioacandrade.Gcars.security.JwtGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Collections;
+
+@RestController
+@RequestMapping("/api/auth")
+@CrossOrigin(origins = "http://localhost:3000")
+public class AuthController {
+    private AuthenticationManager authenticationManager;
+    private AdminRepo adminRepository;
+    private RoleRepository roleRepository;
+    private PasswordEncoder passwordEncoder;
+    private JwtGenerator jwtGenerator;
+
+    @Autowired
+    public AuthController(PasswordEncoder passwordEncoder, RoleRepository roleRepository, AdminRepo adminRepository, AuthenticationManager authenticationManager, JwtGenerator jwtGenerator) {
+        this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
+        this.adminRepository = adminRepository;
+        this.authenticationManager = authenticationManager;
+        this.jwtGenerator = jwtGenerator;
+    }
+
+    @PostMapping("login")
+    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginDto){
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getNome(),loginDto.getSenha()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token = jwtGenerator.generateToken(authentication);
+        return new ResponseEntity<>(new AuthResponseDto(token), HttpStatus.OK);
+
+    }
+
+
+    @PostMapping("register")
+    public ResponseEntity<String> registerUser(@RequestBody RegisterDto registerDTO) {
+        if(adminRepository.existsByNome(registerDTO.getNome())){
+            return new ResponseEntity<>("Nome ja está cadastrado", HttpStatus.BAD_REQUEST);
+        }
+
+        if(adminRepository.existsByEmail(registerDTO.getEmail())){
+            return new ResponseEntity<>("Email ja existente", HttpStatus.BAD_REQUEST);
+        }
+
+
+        Admin admin = new Admin();
+        admin.setNome(registerDTO.getNome());
+        admin.setSenha(passwordEncoder.encode((registerDTO.getSenha())));
+        admin.setEmail(registerDTO.getEmail());
+
+        Role roles = roleRepository.findByName("ADMIN").get();
+        admin.setRoles(Collections.singletonList(roles));
+
+        adminRepository.save(admin);
+
+        return new ResponseEntity<>("Usuario cadastrado com sucesso", HttpStatus.OK);
+
+    }
+}

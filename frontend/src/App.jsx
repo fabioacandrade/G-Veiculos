@@ -1,12 +1,15 @@
 import React from 'react';
-import VeiculosList from './VeiculosList';
-import BuscaVeiculo from './BuscaVeiculo';
+import './App.css';
+import { Outlet } from 'react-router-dom';
+import NavBar from './components/NavBar';
+
 
 export default function App() {
+
     return (
-        <div>
-            <VeiculosList />
-            <BuscaVeiculo />
+        <div className='body'>
+            <NavBar className='navbar'></NavBar>
+            <Outlet />
         </div>
     );
 }
