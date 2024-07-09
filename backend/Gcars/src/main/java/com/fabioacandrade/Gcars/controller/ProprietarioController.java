@@ -2,6 +2,7 @@ package com.fabioacandrade.Gcars.controller;
 
 
 import com.fabioacandrade.Gcars.model.Proprietario;
+import com.fabioacandrade.Gcars.model.Veiculo;
 import com.fabioacandrade.Gcars.service.ProprietarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,11 @@ public class ProprietarioController {
         return ResponseEntity.ok(proprietarioService.findById(id));
     }
 
+    @GetMapping("/cpf/{cpf}")
+    public ResponseEntity<Proprietario> getProprietarioByCpf(@PathVariable String cpf) throws Exception{
+        return ResponseEntity.ok(proprietarioService.findByCpf(cpf));
+    }
+
     @GetMapping("/list")
     public ResponseEntity<List<Proprietario>> getProprietarioList() throws Exception{
         return ResponseEntity.ok(proprietarioService.findAllProprietario());
@@ -30,6 +36,11 @@ public class ProprietarioController {
     @GetMapping("/buscarNome/{nome}")
     public ResponseEntity<List<Proprietario>> getProprietarioByNome(@PathVariable String nome) throws Exception{
         return ResponseEntity.ok(proprietarioService.findByNome(nome));
+    }
+
+    @GetMapping("veiculos/{cpf}")
+    public ResponseEntity<List<Veiculo>> getProprietarioVeiculos(@PathVariable String cpf) throws Exception{
+        return ResponseEntity.ok(proprietarioService.findVeiculosByProprietarioCpf(cpf));
     }
 
     @PostMapping

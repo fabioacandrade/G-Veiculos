@@ -9,6 +9,7 @@ import com.fabioacandrade.Gcars.model.Role;
 import com.fabioacandrade.Gcars.repository.AdminRepo;
 import com.fabioacandrade.Gcars.repository.RoleRepository;
 import com.fabioacandrade.Gcars.security.JwtGenerator;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -67,12 +71,34 @@ public class AuthController {
         admin.setSenha(passwordEncoder.encode((registerDTO.getSenha())));
         admin.setEmail(registerDTO.getEmail());
 
-        Role roles = roleRepository.findByName("ADMIN").get();
-        admin.setRoles(Collections.singletonList(roles));
+        // Obter a role "ADMIN" de maneira segura
+        Optional<Role> optionalRole = roleRepository.findByName("ADMIN");
+        if (optionalRole.isPresent()) {
+            admin.setRoles(Collections.singletonList(optionalRole.get()));
+        } else {
+            return new ResponseEntity<>("Role 'ADMIN' não encontrada", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
         adminRepository.save(admin);
 
         return new ResponseEntity<>("Usuario cadastrado com sucesso", HttpStatus.OK);
-
     }
+
+    @PostMapping("validateToken")
+    public ResponseEntity<String> validateToken(@RequestBody Map<String, String> body) {
+        String token = body.get("token");
+        boolean isValid = jwtGenerator.validateToken(token);
+
+        if (isValid) {
+            Claims claims = jwtGenerator.getClaimsFromToken(token);
+            Date expirationDate = claims.getExpiration();
+            long secondsLeft = (expirationDate.getTime() - System.currentTimeMillis()) / 1000;
+            System.out.println("Faltam " + secondsLeft + " segundos");
+
+            return new ResponseEntity<>("Token é válido", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Token é inválido ou expirado", HttpStatus.BAD_REQUEST);
+        }
+    }
+    
 }

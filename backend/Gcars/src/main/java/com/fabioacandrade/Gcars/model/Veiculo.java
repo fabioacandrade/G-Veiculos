@@ -46,7 +46,7 @@ public class Veiculo implements Serializable {
     private int ano;
 
     @Column(name = "hora_entrada")
-    private LocalDateTime horaEntrada;
+    private String horaEntrada;
 
     @Column(name = "estacionado", columnDefinition = "boolean default false", nullable = false)
     private boolean estacionado;

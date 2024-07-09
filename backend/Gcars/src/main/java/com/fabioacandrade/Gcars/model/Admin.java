@@ -31,6 +31,9 @@ public class Admin {
     @Column(name = "senha", nullable = false)
     private String senha;
 
+    @Column(name = "valor_hora")
+    private Integer valorHora;
+
     @OneToMany(mappedBy = "admin", cascade = CascadeType.ALL)
     private List<Veiculo> veiculos = new ArrayList<>();
 

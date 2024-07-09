@@ -4,14 +4,17 @@ import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import SendIcon from '@mui/icons-material/Send';
+import Grid from '@mui/material/Grid';
 import Axios from 'axios';
-import { cpf } from 'cpf-cnpj-validator';
-import { useNavigate } from 'react-router-dom';
+import { cpf as cpfValidator } from 'cpf-cnpj-validator';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import './style/cadastroVeiculo.css';
 
 export default function ValidationTextFields() {
     const navigate = useNavigate();
+    const { cpf } = useParams();
 
     const [veiculo, setVeiculo] = useState({
         placa: '',
@@ -21,7 +24,7 @@ export default function ValidationTextFields() {
         ano: '',
         modelo: '',
         marca: '',
-        proprietarioCPF: '',
+        proprietarioCPF: cpf || '',
     });
 
     const [errors, setErrors] = useState({
@@ -50,6 +53,85 @@ export default function ValidationTextFields() {
             label: 'Moto',
         },
     ];
+
+    const respostasCor = [
+        {
+            value: 'branco',
+            label: 'Branco',
+        },
+        {
+            value: 'preto',
+            label: 'Preto',
+        },
+        {
+            value: 'prata',
+            label: 'Prata',
+        },
+        {
+            value: 'azul',
+            label: 'Azul',
+        },
+        {
+            value: 'vermelho',
+            label: 'Vermelho',
+        },
+        {
+            value: 'verde',
+            label: 'Verde',
+        },
+        {
+            value: 'amarelo',
+            label: 'Amarelo',
+        },
+        {
+            value: 'rosa',
+            label: 'Rosa',
+        },
+        {
+            value: 'roxo',
+            label: 'Roxo',
+        },
+        {
+            value: 'laranja',
+            label: 'Laranja',
+        },
+        {
+            value: 'marrom',
+            label: 'Marrom',
+        },
+        {
+            value: 'cinza',
+            label: 'Cinza',
+        },
+        {
+            value: 'dourado',
+            label: 'Dourado',
+        },
+        {
+            value: 'prata',
+            label: 'Prata',
+        },
+        {
+            value: 'bege',
+            label: 'Bege',
+        },
+        {
+            value: 'grafite',
+            label: 'Grafite',
+        },
+        {
+            value: 'creme',
+            label: 'Creme',
+        },
+        {
+            value: 'vinho',
+            label: 'Vinho',
+        },
+        {
+            value: 'outro',
+            label: 'Outro',
+        },
+    ]
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -108,7 +190,7 @@ export default function ValidationTextFields() {
             valid = false;
         }
 
-        if (!cpf.isValid(veiculo.proprietarioCPF)) {
+        if (!cpfValidator.isValid(veiculo.proprietarioCPF)) {
             newErrors.proprietarioCPF = 'CPF inválido';
             valid = false;
         }
@@ -130,6 +212,7 @@ export default function ValidationTextFields() {
         };
 
         const token = localStorage.getItem('token');
+
         Axios.post('http://localhost:8080/api/veiculo/', veiculoComAdmin, {
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -138,7 +221,7 @@ export default function ValidationTextFields() {
             .then((response) => {
                 console.log(response);
                 setFetchError('');
-                navigate('/');
+                navigate('/home');
             })
             .catch((error) => {
                 console.error('Erro ao cadastrar veículo:', error);
@@ -150,115 +233,158 @@ export default function ValidationTextFields() {
         <Box
             component="form"
             sx={{
-                '& .MuiTextField-root': { m: 1, width: '25ch' },
+                '& .MuiTextField-root': { m: 1, width: '100%' },
+                maxWidth: '800px',
+                margin: 'auto',
+                marginTop: '150px',
+                padding: '20px',
+                boxShadow: 3,
+                borderRadius: 2,
+                bgcolor: 'background.paper',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minHeight: '50vh',
             }}
             noValidate
             autoComplete="off"
             className="cadastroVeiculo"
         >
             <h1>Cadastro de Veículos</h1>
-            <div className="form">
-                <TextField
-                    id="outlined-placa"
-                    label="Placa do Veículo"
-                    name="placa"
-                    value={veiculo.placa}
-                    placeholder="Placa do veículo"
-                    onChange={handleChange}
-                    error={!!errors.placa}
-                    helperText={errors.placa}
-                />
-                <TextField
-                    id="outlined-cor"
-                    label="Cor do Veículo"
-                    name="cor"
-                    value={veiculo.cor}
-                    placeholder="Cor do veículo"
-                    onChange={handleChange}
-                    error={!!errors.cor}
-                    helperText={errors.cor}
-                />
-                <TextField
-                    id="outlined-estacionado"
-                    select
-                    label="O veículo está estacionado?"
-                    name="estacionado"
-                    value={veiculo.estacionado}
-                    onChange={handleChange}
-                >
-                    {respostasEstacionado.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                        </MenuItem>
-                    ))}
-                </TextField>
-                <TextField
-                    id="outlined-tipo"
-                    select
-                    label="Tipo do Veículo"
-                    name="tipo"
-                    value={veiculo.tipo}
-                    onChange={handleChange}
-                >
-                    {respostasTipo.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                        </MenuItem>
-                    ))}
-                </TextField>
-                <TextField
-                    id="outlined-ano"
-                    label="Ano do Veículo"
-                    name="ano"
-                    value={veiculo.ano}
-                    placeholder="Ano do veículo"
-                    onChange={handleChange}
-                    error={!!errors.ano}
-                    helperText={errors.ano}
-                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-                    onInput={(e) => {
-                        e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                    }}
-                />
-                <TextField
-                    id="outlined-modelo"
-                    label="Modelo do Veículo"
-                    name="modelo"
-                    value={veiculo.modelo}
-                    placeholder="Modelo do veículo"
-                    onChange={handleChange}
-                    error={!!errors.modelo}
-                    helperText={errors.modelo}
-                />
-                <TextField
-                    id="outlined-marca"
-                    label="Marca do Veículo"
-                    name="marca"
-                    value={veiculo.marca}
-                    placeholder="Marca do veículo"
-                    onChange={handleChange}
-                    error={!!errors.marca}
-                    helperText={errors.marca}
-                />
-                <TextField
-                    id="outlined-proprietarioCPF"
-                    label="CPF do proprietário do Veículo"
-                    name="proprietarioCPF"
-                    value={veiculo.proprietarioCPF}
-                    placeholder="CPF do Proprietário do veículo"
-                    onChange={handleChange}
-                    error={!!errors.proprietarioCPF}
-                    helperText={errors.proprietarioCPF}
-                />
-                <Button
-                    variant="contained"
-                    endIcon={<SendIcon />}
-                    onClick={CadastroVeiculo}
-                >
-                    Send
-                </Button>
-                {fetchError && <p className="error">{fetchError}</p>}
-            </div>
+            <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                    <TextField
+                        id="outlined-placa"
+                        label="Placa do Veículo"
+                        name="placa"
+                        value={veiculo.placa}
+                        placeholder="Placa do veículo"
+                        onChange={handleChange}
+                        error={!!errors.placa}
+                        helperText={errors.placa}
+                    />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <TextField
+                        id="outlined-cor"
+                        select
+                        label="Cor do Veículo"
+                        name="cor"
+                        value={veiculo.cor}
+                        placeholder="Cor do veículo"
+                        onChange={handleChange}
+                        error={!!errors.cor}
+                        helperText={errors.cor}
+                    >
+                        {respostasCor.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <TextField
+                        id="outlined-estacionado"
+                        select
+                        label="O veículo está estacionado?"
+                        name="estacionado"
+                        value={veiculo.estacionado}
+                        onChange={handleChange}
+                    >
+                        {respostasEstacionado.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <TextField
+                        id="outlined-tipo"
+                        select
+                        label="Tipo do Veículo"
+                        name="tipo"
+                        value={veiculo.tipo}
+                        onChange={handleChange}
+                    >
+                        {respostasTipo.map((option) => (
+                            <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <TextField
+                        id="outlined-ano"
+                        type='number'
+                        label="Ano do Veículo"
+                        name="ano"
+                        value={veiculo.ano}
+                        placeholder="Ano do veículo"
+                        onChange={handleChange}
+                        error={!!errors.ano}
+                        helperText={errors.ano}
+                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                        onInput={(e) => {
+                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                        }}
+                    />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <TextField
+                        id="outlined-modelo"
+                        label="Modelo do Veículo"
+                        name="modelo"
+                        value={veiculo.modelo}
+                        placeholder="Modelo do veículo"
+                        onChange={handleChange}
+                        error={!!errors.modelo}
+                        helperText={errors.modelo}
+                    />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <TextField
+                        id="outlined-marca"
+                        label="Marca do Veículo"
+                        name="marca"
+                        value={veiculo.marca}
+                        placeholder="Marca do veículo"
+                        onChange={handleChange}
+                        error={!!errors.marca}
+                        helperText={errors.marca}
+                    />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <TextField
+                        id="outlined-proprietarioCPF"
+                        label="CPF do proprietário do Veículo"
+                        name="proprietarioCPF"
+                        value={veiculo.proprietarioCPF}
+                        placeholder="CPF do Proprietário do veículo"
+                        onChange={handleChange}
+                        error={!!errors.proprietarioCPF}
+                        helperText={errors.proprietarioCPF}
+                    />
+                </Grid>
+                <Grid item xs={12} sx={{display:"flex"
+                , justifyContent:"center"
+                , alignItems:"center"
+                }}>
+                    <Button
+                        variant="contained"
+                        endIcon={<SendIcon />}
+                        onClick={CadastroVeiculo}
+                        sx={{ m: 2, width: '100%' }}
+                    >
+                        Cadastrar
+                    </Button>
+                </Grid>
+            </Grid>
+            <Link to={'/cadastro-proprietario'}>Cadastrar Proprietário</Link>
+            {fetchError && <p className="error">{fetchError}</p>}
         </Box>
     );
 }

@@ -16,8 +16,8 @@ import CadastroVeiculo from './routes/CadastroVeiculo';
 import CadastroProprietario from './routes/CadastroProprietario';
 import ErrorPage from './routes/ErrorPage';
 import Login from './routes/login/Login';
-
-
+import Register from './routes/login/Register';
+import Usuario from './routes/Usuario';
 
 
 const router = createBrowserRouter([
@@ -27,12 +27,12 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
-        path: '/',
-        element: <Login />
-      },
-      {
         path: '/home',
         element: <Home />
+      },
+      {
+        path: '/cadastro-veiculo/:cpf',
+        element: <CadastroVeiculo />
       },
       {
         path: '/cadastro-veiculo',
@@ -41,9 +41,23 @@ const router = createBrowserRouter([
       {
         path: '/cadastro-proprietario',
         element: <CadastroProprietario />
+      },
+      {
+        path: '/perfil',
+        element: <Usuario />
+
       }
     ]
+  },
+  {
+    path: '/login',
+    element: <Login />
+  },
+  {
+    path: '/register',
+    element: <Register />
   }
+
 ]);
 
 const store = createStore({

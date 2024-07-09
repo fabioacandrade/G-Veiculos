@@ -87,7 +87,7 @@ export default function BuscaVeiculo() {
 
     return (
         <div>
-            <h1>Veículos Cadastrados</h1>
+            <h2>Veículos Cadastrados</h2>
             <TextField
                 type="text"
                 fullWidth
@@ -95,7 +95,10 @@ export default function BuscaVeiculo() {
                 onChange={(e) => setPlaca(e.target.value)}
                 className="text-field"
             />
-            <Button className="search-button" variant='contained' onClick={() => fetchVeiculosPlaca(placa)}>Buscar</Button>
+            <Button sx={{
+                marginTop: '10px',
+                width: '100%',
+            }} className="search-button" variant='contained' onClick={() => fetchVeiculosPlaca(placa)}>Buscar</Button>
             <div>
                 {errors ?
                     <p className='error'>{errors}</p>

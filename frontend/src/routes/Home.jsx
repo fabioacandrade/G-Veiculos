@@ -1,8 +1,7 @@
 import React from 'react';
 import VeiculosList from '../components/VeiculosList';
-import BuscaVeiculo from '../components/BuscaVeiculo';
-import NavBar from '../components/NavBar';
 import { VeiculosProvider } from '../VeiculosContext';
+import Buscas from './Buscas';
 import '../App.css';
 
 export default function Home() {
@@ -11,7 +10,7 @@ export default function Home() {
         <VeiculosProvider>
             <div className='body'>
                 <div className='content'>
-                    <BuscaVeiculo className="busca" />
+                    <Buscas className="buscas" />
                     <VeiculosList className="lista" />
                 </div>
             </div>

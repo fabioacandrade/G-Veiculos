@@ -36,7 +36,7 @@ public class VeiculoService {
             Veiculo veiculo = new Veiculo();
             veiculo.setCor(veiculoRequest.getCor());
             veiculo.setAno(veiculoRequest.getAno());
-            veiculo.setHoraEntrada(LocalDateTime.now());
+            veiculo.setHoraEntrada(LocalDateTime.now().toString());
             veiculo.setPlaca(veiculoRequest.getPlaca());
             veiculo.setModelo(veiculoRequest.getModelo());
             veiculo.setTipo(veiculoRequest.getTipo());
@@ -133,7 +133,7 @@ public class VeiculoService {
         if(veiculo.isPresent()) {
             Veiculo veiculoSaida = veiculo.get();
             veiculoSaida.setEstacionado(true);
-            veiculoSaida.setHoraEntrada(LocalDateTime.now());
+            veiculoSaida.setHoraEntrada(LocalDateTime.now().toString());
             veiculoRepo.save(veiculoSaida);
             return veiculoSaida.getId();
         }

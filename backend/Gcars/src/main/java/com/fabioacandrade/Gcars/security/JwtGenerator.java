@@ -45,4 +45,11 @@ public class JwtGenerator {
             throw new AuthenticationCredentialsNotFoundException("JWT was Expired or Incorrect");
         }
     }
+
+    public Claims getClaimsFromToken(String token) {
+        return Jwts.parser()
+                .setSigningKey(JWT_SECRET)
+                .parseClaimsJws(token)
+                .getBody();
+    }
 }

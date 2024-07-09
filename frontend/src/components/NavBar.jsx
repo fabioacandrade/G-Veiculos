@@ -7,12 +7,16 @@ import Typography from '@mui/material/Typography';
 import MenuIcon from '@mui/icons-material/Menu';
 import Drawer from '@mui/material/Drawer';
 import Divider from '@mui/material/Divider';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Link } from 'react-router-dom';
 import { Button } from '@mui/material';
-
 import "./style/navBar.css";
+import logo from '../images/logo-no-background.png'; // Importe a imagem diretamente
 
 function PrimaryAppBar({ toggleDrawer }) {
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+    }
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static">
@@ -27,16 +31,30 @@ function PrimaryAppBar({ toggleDrawer }) {
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="div"
-                        sx={{ display: { xs: 'none', sm: 'block' } }}
-                    >
-                        <Link to={'/'} style={{ textDecoration: 'none', color: 'inherit' }}>GCars</Link>
-                    </Typography>
+                    <div className='elementsNavBar'>
+                        <Typography
+                            variant="h6"
+                            noWrap
+                            component="div"
+                            sx={{ display: { xs: 'none', sm: 'block' } }}
+                        >
+                            <Link to={'/home'} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                <img src={logo} alt="GCARS Logo" style={{ height: '40px' }} />
+                            </Link>
+                        </Typography>
+                        <Typography
+                            variant="h6"
+                            noWrap
+                            component="div"
+                            sx={{ display: { xs: 'none', sm: 'block' } }}
+                        >
+                            <Link to={'/perfil'} style={{ textDecoration: 'none', color: 'inherit' }} >
+                                <AccountCircleIcon style={{ fontSize: '2.5rem' }} />
+                            </Link>
+                        </Typography>
+                    </div>
                 </Toolbar>
-            </AppBar>
+         </AppBar>
         </Box>
     );
 }
@@ -49,18 +67,6 @@ function AnchorTemporaryDrawer({ state, toggleDrawer }) {
             onClick={toggleDrawer(anchor, false)}
             onKeyDown={toggleDrawer(anchor, false)}
         >
-            <Link to='/cadastro-veiculo' style={{ textDecoration: 'none' }}>
-                <Button sx={{
-                    width: '100%',
-                    padding: '16px 0',
-                    fontSize: '1.1rem',
-                    color: '#1976d2',
-                    '&:hover': {
-                        backgroundColor: '#e3f2fd'
-                    }
-                }}>Cadastrar Veículos</Button>
-            </Link>
-            <Divider />
             <Link to='/cadastro-proprietario' style={{ textDecoration: 'none' }}>
                 <Button sx={{
                     width: '100%',
@@ -71,6 +77,18 @@ function AnchorTemporaryDrawer({ state, toggleDrawer }) {
                         backgroundColor: '#e3f2fd'
                     }
                 }}>Cadastrar Proprietário</Button>
+            </Link>
+            <Divider />
+            <Link to='/cadastro-veiculo' style={{ textDecoration: 'none' }}>
+                <Button sx={{
+                    width: '100%',
+                    padding: '16px 0',
+                    fontSize: '1.1rem',
+                    color: '#1976d2',
+                    '&:hover': {
+                        backgroundColor: '#e3f2fd'
+                    }
+                }}>Cadastrar Veículos</Button>
             </Link>
         </Box>
     );

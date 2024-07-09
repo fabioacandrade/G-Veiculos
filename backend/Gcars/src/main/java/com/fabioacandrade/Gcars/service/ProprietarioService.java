@@ -2,7 +2,9 @@ package com.fabioacandrade.Gcars.service;
 
 
 import com.fabioacandrade.Gcars.model.Proprietario;
+import com.fabioacandrade.Gcars.model.Veiculo;
 import com.fabioacandrade.Gcars.repository.ProprietarioRepo;
+import com.fabioacandrade.Gcars.repository.VeiculoRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,9 @@ public class ProprietarioService {
 
     @Autowired
     private ProprietarioRepo proprietarioRepo;
+
+    @Autowired
+    private VeiculoRepo veiculoRepo;
 
     public List<Proprietario> findAllProprietario() throws Exception{
         List<Proprietario> proprietarios = proprietarioRepo.findAll();
@@ -42,6 +47,16 @@ public class ProprietarioService {
         throw new Exception("Proprietário não encontrado!");
     }
 
+    public Proprietario findByCpf(String cpf) throws Exception {
+        Optional<Proprietario> proprietario = proprietarioRepo.findByCpf(cpf);
+
+        if(proprietario.isPresent()) {
+            return proprietario.get();
+        }
+
+        throw new Exception("Proprietário não encontrado para tal cpf");
+    }
+
     public List<Proprietario> findByNome(String nome) throws Exception {
 
         Optional<List<Proprietario>> proprietario = proprietarioRepo.findByNome(nome);
@@ -51,6 +66,14 @@ public class ProprietarioService {
         }
 
         return proprietario.get();
+    }
 
+    public List<Veiculo> findVeiculosByProprietarioCpf(String cpf) throws Exception {
+        List<Veiculo> veiculos = veiculoRepo.findByProprietarioCpf(cpf);
+
+        if (veiculos.isEmpty()) {
+            throw new Exception("Nenhum veículo encontrado para o proprietário com CPF: " + cpf);
+        }
+        return veiculos;
     }
 }

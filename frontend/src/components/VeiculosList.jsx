@@ -1,4 +1,3 @@
-// VeiculosList.js
 import React, { useEffect, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
@@ -15,12 +14,17 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import { useVeiculos } from '../VeiculosContext';
 import axios from 'axios';
+import { format } from 'date-fns';
 import './style/veiculosList.css';
 
 const VeiculosList = () => {
     const { veiculos, fetchVeiculos, fetchListaVeiculos } = useVeiculos();
 
     const [valorHora, setValorHora] = useState(0);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [open, setOpen] = useState(false);
+    const [veiculoSaida, setVeiculoSaida] = useState({});
 
     const columns = [
         { id: 'placa', label: 'Placa', minWidth: 170 },
@@ -45,16 +49,44 @@ const VeiculosList = () => {
         p: 4,
     };
 
-    const [open, setOpen] = useState(false);
-    const [veiculoSaida, setVeiculoSaida] = useState({});
+    const getValorHora = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const nome = localStorage.getItem('nomeUsuario');
+            const response = await axios.get(`http://localhost:8080/api/admin/getValorHoraByNome/${nome}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            setValorHora(response.data);
+        } catch (error) {
+            console.error('Erro ao buscar valor da hora:', error);
+        }
+    };
 
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    useEffect(() => {
+        getValorHora();
+    }, []);
 
-    function marcarSaida(row) {
-        setVeiculoSaida(row);
-        handleOpen();
-    }
+    const setValorHoraByNome = async (valor) => {
+        try {
+            const token = localStorage.getItem('token');
+            const nome = localStorage.getItem('nomeUsuario');
+            await axios.put(`http://localhost:8080/api/admin/setValorHoraByNome/${nome}/${valor}`, null, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+        } catch (error) {
+            console.error('Erro ao setar valor da hora:', error);
+        }
+    };
+
+    const handleValorHoraChange = (event) => {
+        const novoValorHora = event.target.value;
+        setValorHora(novoValorHora);
+        setValorHoraByNome(novoValorHora);
+    };
 
     const marcarSaidaVeiculo = async (id) => {
         try {
@@ -73,12 +105,13 @@ const VeiculosList = () => {
     };
 
     useEffect(() => {
-        console.log('useEffect in VeiculosList called');
         fetchVeiculos();
     }, [fetchVeiculos]);
 
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const marcarSaida = (row) => {
+        setVeiculoSaida(row);
+        handleOpen();
+    };
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -89,18 +122,15 @@ const VeiculosList = () => {
         setPage(0);
     };
 
-    function formatarDataIso8601(dataIso) {
-        const data = new Date(dataIso);
-        const dia = data.getDate().toString().padStart(2, '0');
-        const mes = (data.getMonth() + 1).toString().padStart(2, '0');
-        const ano = data.getFullYear();
-        const hora = data.getHours().toString().padStart(2, '0');
-        const minutos = data.getMinutes().toString().padStart(2, '0');
+    const handleOpen = () => setOpen(true);
 
-        return `${dia}/${mes}/${ano} ${hora}:${minutos}`;
-    }
+    const handleClose = () => setOpen(false);
 
-    function valorFinal(horaEntrada) {
+    const formatarData = (dataIso) => {
+        return format(new Date(dataIso), 'dd/MM/yyyy HH:mm:ss');
+    };
+
+    const valorFinal = (horaEntrada) => {
         const dataEntrada = new Date(horaEntrada);
         const dataSaida = new Date();
         const diferenca = dataSaida - dataEntrada;
@@ -108,7 +138,7 @@ const VeiculosList = () => {
         const minutos = Math.floor((diferenca % 3600000) / 60000);
         const valor = horas * valorHora + (minutos * valorHora) / 60;
         return valor.toFixed(2);
-    }
+    };
 
     return (
         <Paper sx={{ width: '75%', overflow: 'auto' }} className='Paper'>
@@ -117,7 +147,9 @@ const VeiculosList = () => {
                 <div className='valor-hora'>
                     <Typography variant="h5" component="div">Valor da Hora:</Typography>
                     <TextField
-                        type="number" value={valorHora} onChange={(e) => setValorHora(e.target.value)}
+                        type="number"
+                        value={valorHora}
+                        onChange={handleValorHoraChange}
                         sx={{ ml: 2 }}
                     />
                 </div>
@@ -143,7 +175,7 @@ const VeiculosList = () => {
                             .map((row, index) => (
                                 <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
                                     {columns.map((column) => {
-                                        const value = column.id === 'horaEntrada' ? formatarDataIso8601(row[column.id]) : row[column.id];
+                                        const value = column.id === 'horaEntrada' ? formatarData(row[column.id]) : row[column.id];
                                         if (column.id === 'MarcarSaida') {
                                             return (
                                                 <TableCell key={column.id} align="left" className={index % 2 === 0 ? 'Par' : 'Impar'}>
@@ -151,10 +183,12 @@ const VeiculosList = () => {
                                                 </TableCell>
                                             );
                                         }
+
                                         return (
                                             <TableCell key={column.id} align="left" className={index % 2 === 0 ? 'Par' : 'Impar'}>
-                                                {value ? value : '-'}
+                                                {value ? value.toString().toUpperCase() : '-'}
                                             </TableCell>
+
                                         );
                                     })}
                                 </TableRow>
@@ -184,10 +218,14 @@ const VeiculosList = () => {
                     <Typography id="modal-modal-title" variant="h6" component="h2">
                         Valor a ser pago R$ {valorFinal(veiculoSaida.horaEntrada)}
                     </Typography>
-                    
-                    
-                    <Button variant='contained' color="success" onClick={() => marcarSaidaVeiculo(veiculoSaida.id)}>Sim</Button>
-                    <Button variant='contained' color="error" onClick={handleClose}>Não</Button>
+                    <Box sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        marginTop: '20px'
+                    }}>
+                        <Button variant='contained' color="error" onClick={handleClose}>Não</Button>
+                        <Button variant='contained' color="success" onClick={() => marcarSaidaVeiculo(veiculoSaida.id)}>Sim</Button>
+                    </Box>
                 </Box>
             </Modal>
         </Paper>
