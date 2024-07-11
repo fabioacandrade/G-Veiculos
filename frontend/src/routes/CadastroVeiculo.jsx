@@ -206,9 +206,11 @@ export default function ValidationTextFields() {
             return;
         }
 
+        const adminNome = localStorage.getItem('nomeUsuario');
+
         const veiculoComAdmin = {
             ...veiculo,
-            admin: 1,
+            adminNome: adminNome,
         };
 
         const token = localStorage.getItem('token');
@@ -263,6 +265,7 @@ export default function ValidationTextFields() {
                         onChange={handleChange}
                         error={!!errors.placa}
                         helperText={errors.placa}
+                        inputProps={{ maxLength: 7 }}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -327,10 +330,11 @@ export default function ValidationTextFields() {
                         onChange={handleChange}
                         error={!!errors.ano}
                         helperText={errors.ano}
-                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', maxLength: 4  }}
                         onInput={(e) => {
                             e.target.value = e.target.value.replace(/[^0-9]/g, '');
                         }}
+                        
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -343,6 +347,7 @@ export default function ValidationTextFields() {
                         onChange={handleChange}
                         error={!!errors.modelo}
                         helperText={errors.modelo}
+                        inputProps={{ maxLength: 30 }}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -354,6 +359,7 @@ export default function ValidationTextFields() {
                         placeholder="Marca do veículo"
                         onChange={handleChange}
                         error={!!errors.marca}
+                        inputProps={{ maxLength: 30 }}
                         helperText={errors.marca}
                     />
                 </Grid>
@@ -367,6 +373,10 @@ export default function ValidationTextFields() {
                         onChange={handleChange}
                         error={!!errors.proprietarioCPF}
                         helperText={errors.proprietarioCPF}
+                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', maxLength: 11  }}
+                        onInput={(e) => {
+                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                        }}
                     />
                 </Grid>
                 <Grid item xs={12} sx={{display:"flex"

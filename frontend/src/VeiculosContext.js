@@ -12,11 +12,10 @@ export const VeiculosProvider = ({ children }) => {
     const [veiculosLista, setVeiculosLista] = useState([]);
 
     const fetchVeiculos = useCallback(async () => {
-        // console.log('fetchVeiculos called');
+        const adminNome = localStorage.getItem('nomeUsuario');
         try {
             const token = localStorage.getItem('token');
-            // console.log('token:', token)
-            const response = await axios.get('http://localhost:8080/api/veiculo/listaEstacionados', {
+            const response = await axios.get(`http://localhost:8080/api/veiculo/listaEstacionados/${adminNome}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -30,10 +29,10 @@ export const VeiculosProvider = ({ children }) => {
     }, []);
 
     const fetchListaVeiculos = useCallback(async () => {
-        // console.log('fetchListaVeiculos called');
         try {
+            const adminNome = localStorage.getItem('nomeUsuario');
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:8080/api/veiculo', {
+            const response = await axios.get(`http://localhost:8080/api/veiculo/${adminNome}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -50,7 +49,6 @@ export const VeiculosProvider = ({ children }) => {
     }, [fetchListaVeiculos]);
 
     useEffect(() => {
-        // console.log('useEffect in VeiculosProvider called');
         fetchVeiculos();
     }, [fetchVeiculos]);
 

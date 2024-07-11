@@ -30,24 +30,24 @@ public class VeiculoController {
         return ResponseEntity.ok(id);
     }
 
-    @GetMapping
-    public ResponseEntity<List<Veiculo>> listarVeiculos() throws Exception {
-        return ResponseEntity.ok(veiculoService.getAllDetails());
+    @GetMapping("/{nomeAdmin}")
+    public ResponseEntity<List<Veiculo>> listarVeiculos(@PathVariable String nomeAdmin) throws Exception {
+        return ResponseEntity.ok(veiculoService.getAllDetails(nomeAdmin));
     }
 
-    @GetMapping("/placa/{placa}")
-    public ResponseEntity<Veiculo> buscarVeiculoPorPlaca(@PathVariable String placa) throws Exception{
-        return ResponseEntity.ok(veiculoService.getVeiculoByPlaca(placa));
+    @GetMapping("/placa/{placa}/{nomeAdmin}")
+    public ResponseEntity<Veiculo> buscarVeiculoPorPlaca(@PathVariable String placa, @PathVariable String nomeAdmin) throws Exception{
+        return ResponseEntity.ok(veiculoService.getVeiculoByPlaca( placa, nomeAdmin ));
     }
 
-    @GetMapping("/proprietario/{placa}")
-    public ResponseEntity<Proprietario> buscarProprietarioPorPlaca(@PathVariable String placa) throws Exception {
-        return ResponseEntity.ok(veiculoService.getProprietarioByPlaca(placa));
+    @GetMapping("/proprietario/{placa}/{nomeAdmin}")
+    public ResponseEntity<Proprietario> buscarProprietarioPorPlaca(@PathVariable String placa, @PathVariable String nomeAdmin) throws Exception {
+        return ResponseEntity.ok(veiculoService.getProprietarioByPlaca(placa, nomeAdmin));
     }
 
-    @GetMapping("/listaEstacionados")
-    public ResponseEntity<List<Veiculo>> listarEstacionados() throws Exception {
-        return ResponseEntity.ok(veiculoService.getEstacionados());
+    @GetMapping("/listaEstacionados/{nomeAdmin}")
+    public ResponseEntity<List<Veiculo>> listarEstacionados(@PathVariable String nomeAdmin) throws Exception {
+        return ResponseEntity.ok(veiculoService.getEstacionados(nomeAdmin));
     }
 
     @PutMapping("/marcarSaida/{id}")
@@ -58,6 +58,16 @@ public class VeiculoController {
     @PutMapping("/estacionar/{id}")
     public ResponseEntity<Long>  estacionar(@PathVariable Long id) throws Exception {
         return ResponseEntity.ok(veiculoService.estacionar(id));
+    }
+
+    @DeleteMapping("/excluir/{placa}/{adminNome}")
+    public ResponseEntity<String> deleteVeiculoByPlaca(@PathVariable String placa, @PathVariable String adminNome) {
+        try {
+            veiculoService.excluirVeiculo(placa, adminNome);
+            return ResponseEntity.ok("Veiculo com placa " + placa + " deletado com sucesso.");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Erro ao deletar o veículo: " + e.getMessage());
+        }
     }
 
 

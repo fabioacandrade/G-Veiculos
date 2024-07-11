@@ -13,6 +13,17 @@
     margin-top: 20px;
     border: 1px solid #ccc;
     padding: 10px;
+    width: 350px;
+    background: white;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+}
+
+
+
+.buttons{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
 }
 
 .error {
@@ -33,6 +44,7 @@
     flex-direction: column;
     gap: 10px; /* Espaço entre os botões */
     align-items: center;
+    
 }
 
 .button-container .button, 

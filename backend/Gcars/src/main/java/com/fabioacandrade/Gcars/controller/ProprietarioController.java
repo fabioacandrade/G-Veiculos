@@ -18,34 +18,40 @@ public class ProprietarioController {
     @Autowired
     private ProprietarioService proprietarioService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Proprietario> getProprietarioById(@PathVariable Long id) throws Exception{
-        return ResponseEntity.ok(proprietarioService.findById(id));
+//    @GetMapping("/{id}")
+//    public ResponseEntity<Proprietario> getProprietarioById(@PathVariable Long id) throws Exception{
+//        return ResponseEntity.ok(proprietarioService.findById(id));
+//    }
+
+    @GetMapping("/cpf/{cpf}/{nomeAdmin}")
+    public ResponseEntity<Proprietario> getProprietarioByCpf(@PathVariable String cpf, @PathVariable String nomeAdmin) throws Exception {
+        return ResponseEntity.ok(proprietarioService.findByCpf(cpf, nomeAdmin));
     }
 
-    @GetMapping("/cpf/{cpf}")
-    public ResponseEntity<Proprietario> getProprietarioByCpf(@PathVariable String cpf) throws Exception{
-        return ResponseEntity.ok(proprietarioService.findByCpf(cpf));
+    @GetMapping("/list/{nomeAdmin}")
+    public ResponseEntity<List<Proprietario>> getProprietarioList(@PathVariable String nomeAdmin) throws Exception{
+        return ResponseEntity.ok(proprietarioService.findAllProprietario(nomeAdmin));
     }
 
-    @GetMapping("/list")
-    public ResponseEntity<List<Proprietario>> getProprietarioList() throws Exception{
-        return ResponseEntity.ok(proprietarioService.findAllProprietario());
+    @GetMapping("/buscarNome/{nome}/{nomeAdmin}")
+    public ResponseEntity<List<Proprietario>> getProprietarioByNome(@PathVariable String nome ,@PathVariable String nomeAdmin) throws Exception{
+        return ResponseEntity.ok(proprietarioService.findByNome(nome, nomeAdmin));
     }
 
-    @GetMapping("/buscarNome/{nome}")
-    public ResponseEntity<List<Proprietario>> getProprietarioByNome(@PathVariable String nome) throws Exception{
-        return ResponseEntity.ok(proprietarioService.findByNome(nome));
+    @GetMapping("veiculos/{cpf}/{nomeAdmin}")
+    public ResponseEntity<List<Veiculo>> getProprietarioVeiculos(@PathVariable String cpf,@PathVariable String nomeAdmin) throws Exception{
+        return ResponseEntity.ok(proprietarioService.findVeiculosByProprietarioCpf( cpf, nomeAdmin ));
     }
 
-    @GetMapping("veiculos/{cpf}")
-    public ResponseEntity<List<Veiculo>> getProprietarioVeiculos(@PathVariable String cpf) throws Exception{
-        return ResponseEntity.ok(proprietarioService.findVeiculosByProprietarioCpf(cpf));
+    @PostMapping("{nomeAdmin}")
+    public ResponseEntity<Long> saveProprietario(@RequestBody Proprietario proprietario, @PathVariable String nomeAdmin) throws Exception {
+        return ResponseEntity.ok(proprietarioService.saveProprietario(proprietario, nomeAdmin));
     }
 
-    @PostMapping
-    public ResponseEntity<Long> saveProprietario(@RequestBody Proprietario proprietario) throws Exception {
-        return ResponseEntity.ok(proprietarioService.saveProprietario(proprietario));
+    @DeleteMapping("{cpf}/{nomeAdmin}")
+    public ResponseEntity<String> deleteProprietario(@PathVariable String cpf, @PathVariable String nomeAdmin) throws Exception {
+        proprietarioService.excluirProprietario(cpf,nomeAdmin);
+        return ResponseEntity.ok("Proprietario com cpf: " + cpf + "excluido com sucesso");
     }
 
 }

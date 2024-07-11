@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
 import './style/buscaVeiculo.css';
 import { useVeiculos } from '../VeiculosContext';
 
@@ -15,8 +16,10 @@ export default function BuscaVeiculo() {
 
     const fetchVeiculosPlaca = async (placaToFetch) => {
         try {
+            const placa = placaToFetch.toUpperCase();
             const token = localStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8080/api/veiculo/placa/${placaToFetch}`, {
+            const nomeUsuario = localStorage.getItem('nomeUsuario');
+            const response = await axios.get(`http://localhost:8080/api/veiculo/placa/${placa}/${nomeUsuario}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -40,7 +43,8 @@ export default function BuscaVeiculo() {
     const fetchProprietario = async (placaToFetch) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8080/api/veiculo/proprietario/${placaToFetch}`, {
+            const nomeUsuario = localStorage.getItem('nomeUsuario');
+            const response = await axios.get(`http://localhost:8080/api/veiculo/proprietario/${placaToFetch}/${nomeUsuario}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -69,6 +73,24 @@ export default function BuscaVeiculo() {
         }
     };
 
+    const excluirVeículo = async (placa) => {
+        try {
+            const token = localStorage.getItem('token');
+            const nomeUsuario = localStorage.getItem('nomeUsuario');
+            await axios.delete(`http://localhost:8080/api/veiculo/excluir/${placa}/${nomeUsuario}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            fetchListaVeiculos();
+            fetchVeiculos();
+            setMostrarVeiculo(false);
+        } catch (error) {
+            console.error('Erro ao excluir veículo:', error);
+            setErrors('Erro ao excluir veículo');
+        }
+    }
+
     function formatarDataIso8601(dataIso) {
         const data = new Date(dataIso);
         const dia = data.getDate().toString().padStart(2, '0');
@@ -94,6 +116,7 @@ export default function BuscaVeiculo() {
                 placeholder="Placa do veículo"
                 onChange={(e) => setPlaca(e.target.value)}
                 className="text-field"
+                inputProps={{ maxLength: 7 }}
             />
             <Button sx={{
                 marginTop: '10px',
@@ -107,38 +130,76 @@ export default function BuscaVeiculo() {
                 }
                 {mostrarVeiculo ?
                     <div className='list-container'>
+                        <h3>Veículo</h3>
                         <p>Placa: {veiculo.placa}</p>
                         <p>Cor: {veiculo.cor}</p>
                         <p>Ano: {veiculo.ano}</p>
                         <p>Hora de Entrada: {formatarDataIso8601(veiculo.horaEntrada)}</p>
                         <div className='proprietario'>
-                            <h2>Proprietário:</h2>
+                            <h3>Proprietário</h3>
                             <p>Nome: {proprietario.nome}</p>
                             <p>E-mail: {proprietario.email}</p>
                             <p>Telefone: {proprietario.telefone}</p>
+                            <h3>Endereço:</h3>
+                            <p>Cidade: {proprietario.cidade}</p>
+                            <p>Estado: {proprietario.estado}</p>
+                            <p>CEP: {proprietario.cep}</p>
+                            <p>Rua: {proprietario.endereco}</p>
+                            <p>Numero: {proprietario.numero}</p>
                         </div>
-                        <Button variant='contained' onClick={() => voltarLista()}>Voltar</Button>
+                        <div className='buttons'>
+                            <Button variant='outlined' onClick={() => voltarLista()}>Voltar</Button>
+                            <Button color='error' variant='contained' onClick={() => excluirVeículo(veiculo.placa)}>Excluir Veículo</Button>
+                        </div>
                     </div>
                     :
                     <div className='list-container'>
+                    {veiculosLista.length === 0 ? (
+                        <p style={{
+                            textAlign: 'center',
+                        }}>Nenhum veículo cadastrado</p>
+                    ) : (
                         <ul>
                             {veiculosLista.map((v) => (
-                                <li key={v.id}>
+                                <li
+                                    style={{
+                                        listStyle: 'none',
+                                    }}
+                                    key={v.id}
+                                >
                                     <p>Placa: {v.placa}</p>
-                                    <p>Cor: {v.cor}</p>
-                                    <p>Ano: {v.ano}</p>
-                                    <div className="button-container">
-                                        <Button variant="outlined" onClick={() => fetchVeiculosPlaca(String(v.placa))}>Ver Detalhes</Button>
-                                        {!v.estacionado ?
-                                            <Button variant='contained' className='button' onClick={() => estacionarVeiculoVoltandoParaALista(v)}>estacionar</Button>
-                                            :
+                                    {/* <p>Cor: {v.cor}</p>
+                                    <p>Ano: {v.ano}</p> */}
+                                    <div
+                                        style={{
+                                            margin: '10px',
+                                        }}
+                                        className="button-container"
+                                    >
+                                        <Button
+                                            variant="outlined"
+                                            onClick={() => fetchVeiculosPlaca(String(v.placa))}
+                                        >
+                                            Ver Detalhes
+                                        </Button>
+                                        {!v.estacionado ? (
+                                            <Button
+                                                variant="contained"
+                                                className='button'
+                                                onClick={() => estacionarVeiculoVoltandoParaALista(v)}
+                                            >
+                                                Estacionar
+                                            </Button>
+                                        ) : (
                                             <p className='help'>Veículo estacionado</p>
-                                        }
+                                        )}
                                     </div>
+                                    <Divider />
                                 </li>
                             ))}
                         </ul>
-                    </div>
+                    )}
+                </div>
                 }
             </div>
         </div>

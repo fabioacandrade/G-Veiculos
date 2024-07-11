@@ -2,17 +2,14 @@ package com.fabioacandrade.Gcars.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -27,7 +24,7 @@ public class Veiculo implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name="placa", nullable = false, unique = true)
+    @Column(name="placa", nullable = false)
     private String placa;
 
     @Column(name = "cor", nullable = false)
@@ -61,4 +58,18 @@ public class Veiculo implements Serializable {
     @JoinColumn(name = "proprietario_id")
     private Proprietario proprietario;
 
+//    @Override
+//    public String toString() {
+//        return "Veiculo{" +
+//                "id=" + id +
+//                ", placa='" + placa + '\'' +
+//                ", cor='" + cor + '\'' +
+//                ", tipo='" + tipo + '\'' +
+//                ", modelo='" + modelo + '\'' +
+//                ", marca='" + marca + '\'' +
+//                ", ano=" + ano +
+//                ", horaEntrada='" + horaEntrada + '\'' +
+//                ", estacionado=" + estacionado +
+//                '}';
+//    }
 }

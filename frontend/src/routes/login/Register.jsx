@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import logo from '../../images/logo-no-background.png';
+import { wait } from '@testing-library/user-event/dist/utils';
 
 function Copyright(props) {
   return (
@@ -48,7 +49,9 @@ export default function Register() {
       );
 
       if (response.status === 200) {
-        setResponse("Usuário cadastrado com sucesso!");
+        setResponse("Usuário cadastrado com sucesso! Redirecionando...");
+        wait(2000);
+        window.location.href = '/login';
       }
 
     } catch (err) {
@@ -179,6 +182,11 @@ export default function Register() {
               >
                 Cadastrar
               </Button>
+              {response && (
+                <Typography variant="body2" color="success.main" align="center">
+                  {response}
+                </Typography>
+              )}
               <Grid container justifyContent="flex-end">
                 <Grid item>
                   <Link href="/login" variant="body2">
@@ -203,9 +211,6 @@ export default function Register() {
           }}
         />
       </Grid>
-      <Typography variant="body2" color="text.secondary" align="center">
-        {response}
-      </Typography>
       <Copyright sx={{ mt: 5 }} />
     </ThemeProvider>
   );

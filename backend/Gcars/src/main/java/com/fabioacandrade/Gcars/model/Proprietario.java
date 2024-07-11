@@ -1,18 +1,17 @@
 package com.fabioacandrade.Gcars.model;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 import org.hibernate.validator.constraints.br.CPF;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import java.util.*;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -28,7 +27,7 @@ public class Proprietario {
     private String nome;
 
     @Email
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email", nullable = false)//
     private String email;
 
     @Column(name = "endereco", nullable = false)
@@ -47,14 +46,36 @@ public class Proprietario {
     private String numero;
 
     @CPF
-    @Column(name = "cpf", nullable = false, unique = true)
+    @Column(name = "cpf", nullable = false)//
     private String cpf;
 
     @Size(min = 9, max = 14)
-    @Column(name = "telefone", nullable = false, unique = true)
+    @Column(name = "telefone", nullable = false)//
     private String telefone;
 
-    @OneToMany(mappedBy = "proprietario", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "admin_id")
+    private Admin admin;
+
+    @OneToMany(mappedBy = "proprietario", cascade = CascadeType.ALL, fetch = FetchType.LAZY ,orphanRemoval = true)
     private List<Veiculo> veiculos = new ArrayList<>();
 
+//    @Override
+//    public String toString() {
+//        return "Proprietario{" +
+//                "id=" + id +
+//                ", nome='" + nome + '\'' +
+//                ", email='" + email + '\'' +
+//                ", endereco='" + endereco + '\'' +
+//                ", cidade='" + cidade + '\'' +
+//                ", estado='" + estado + '\'' +
+//                ", cep='" + cep + '\'' +
+//                ", numero='" + numero + '\'' +
+//                ", cpf='" + cpf + '\'' +
+//                ", telefone='" + telefone + '\'' +
+//                ", admin=" + admin +
+//                ", veiculos=" + veiculos +
+//                '}';
+//    }
 }

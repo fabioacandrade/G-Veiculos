@@ -12,7 +12,7 @@ public class VeiculoRequest {
     private String tipo;
     private String proprietarioCPF;
     private int ano;
-    private Long admin;
+    private String adminNome;
     private boolean estacionado;
 
 }

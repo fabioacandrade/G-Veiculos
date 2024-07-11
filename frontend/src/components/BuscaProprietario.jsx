@@ -19,8 +19,9 @@ export default function BuscaVeiculo() {
 
     const fetchProprietarioByCpf = async (cpf) => {
         try {
+            const nomeAdmin = localStorage.getItem('nomeUsuario');
             const token = localStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8080/api/proprietario/cpf/${cpf}`, {
+            const response = await axios.get(`http://localhost:8080/api/proprietario/cpf/${cpf}/${nomeAdmin}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -34,10 +35,29 @@ export default function BuscaVeiculo() {
         }
     };
 
+    const excluirProprietario = async (cpf) => {
+        try {
+            const nomeAdmin = localStorage.getItem('nomeUsuario');
+            const token = localStorage.getItem('token');
+            await axios.delete(`http://localhost:8080/api/proprietario/${cpf}/${nomeAdmin}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            fetchVeiculos();
+            fetchProprietarioList();
+            setMostrarProprietário(false);
+        } catch (error) {
+            console.error('Erro ao excluir proprietário:', error);
+            setErrors('Erro ao excluir proprietário');
+        }
+    };
+
     const fetchProprietarioList = async () => {
         try {
+            const nomeAdmin = localStorage.getItem('nomeUsuario');
             const token = localStorage.getItem('token');
-            const response = await axios.get(`http://localhost:8080/api/proprietario/list`, {
+            const response = await axios.get(`http://localhost:8080/api/proprietario/list/${nomeAdmin}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -72,7 +92,7 @@ export default function BuscaVeiculo() {
         fetchProprietarioList();
     }, []);
 
-    function HandleCadastrarVeiculo(cpf) {
+    function handleCadastrarVeiculo(cpf) {
         window.location.href = `/cadastro-veiculo/${cpf}`;
     }
 
@@ -98,6 +118,10 @@ export default function BuscaVeiculo() {
                 placeholder="CPF do proprietário"
                 onChange={(e) => setCpf(e.target.value)}
                 className="text-field"
+                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', maxLength: 11 }}
+                onInput={(e) => {
+                    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                }}
             />
             <Button sx={{
                 marginTop: '10px',
@@ -115,6 +139,12 @@ export default function BuscaVeiculo() {
                         <p>CPF: {proprietario.cpf}</p>
                         <p>Email: {proprietario.email}</p>
                         <p>Telefone: {formatTelephoneNumber(proprietario.telefone)}</p>
+                        <h3>Endereço</h3>
+                        <p>Cidade: {proprietario.cidade}</p>
+                        <p>Estado: {proprietario.estado}</p>
+                        <p>CEP: {proprietario.cep}</p>
+                        <p>Rua: {proprietario.endereco}</p>
+                        <p>Numero: {proprietario.numero}</p>
                         <div className='veiculos'>
                             <h2>Veículos:</h2>
                             <ul>
@@ -125,9 +155,9 @@ export default function BuscaVeiculo() {
                                         <p>Ano: {v.ano}</p>
                                         {
                                             !v.estacionado ?
-                                            <Button variant='contained' onClick={() => estacionarVeiculoVoltandoParaALista(v)}>estacionar</Button>
-                                            :
-                                            <p className='help'>Veículo estacionado</p>
+                                                <Button variant='contained' onClick={() => estacionarVeiculoVoltandoParaALista(v)}>estacionar</Button>
+                                                :
+                                                <p className='help'>Veículo estacionado</p>
                                         }
                                         <Divider></Divider>
                                     </li>
@@ -135,23 +165,36 @@ export default function BuscaVeiculo() {
                             </ul>
                             <Button sx={{
                                 marginBottom: '10px',
-                            }} variant='outlined' onClick={() => HandleCadastrarVeiculo(proprietario.cpf)}>Cadastrar Veículo</Button>
+                            }} variant='outlined' onClick={() => handleCadastrarVeiculo(proprietario.cpf)}>Cadastrar Veículo</Button>
                         </div>
-                        <Button variant='contained' onClick={() => voltarLista()}>Voltar</Button>
+                        <div className='buttons'>
+                            <Button variant='contained' onClick={() => voltarLista()}>Voltar</Button>
+                            <Button color='error' variant='contained' onClick={() => excluirProprietario(proprietario.cpf)}>Excluir Proprietário</Button>
+                        </div>
                     </div>
                     :
                     <div className='list-container'>
                         <ul>
-                            {proprietarioLista.map((p) => (
-                                <li key={p.id}>
-                                    <p>Nome: {p.nome}</p>
-                                    <p>Email: {p.email}</p>
-                                    <p>Telefone: {formatTelephoneNumber(p.telefone)}</p>
-                                    <div className="button-container">
-                                        <Button variant="outlined" onClick={() => fetchProprietarioByCpf(String(p.cpf))}>Ver Detalhes</Button>
-                                    </div>
-                                </li>
-                            ))}
+                            {proprietarioLista.length === 0 ? (
+                                <p style={{
+                                    textAlign: 'center',
+                                }}>Nenhum proprietário cadastrado</p>
+                            ) :
+                                (proprietarioLista.map((p) => (
+                                    <li style={{
+                                        listStyle: 'none'
+                                    }} key={p.id}>
+                                        <p>Nome: {p.nome}</p>
+                                        <p>Email: {p.email}</p>
+                                        <p>Telefone: {formatTelephoneNumber(p.telefone)}</p>
+                                        <div style={{
+                                            margin: '20px'
+                                        }} className="button-container">
+                                            <Button variant="outlined" onClick={() => fetchProprietarioByCpf(String(p.cpf))}>Ver Detalhes</Button>
+                                        </div>
+                                        <Divider></Divider>
+                                    </li>
+                                )))}
                         </ul>
                     </div>
                 }

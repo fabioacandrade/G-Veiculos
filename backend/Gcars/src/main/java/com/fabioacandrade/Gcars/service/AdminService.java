@@ -2,11 +2,13 @@ package com.fabioacandrade.Gcars.service;
 
 
 import com.fabioacandrade.Gcars.model.Admin;
+import com.fabioacandrade.Gcars.model.Veiculo;
 import com.fabioacandrade.Gcars.repository.AdminRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.CriteriaBuilder;
+
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,6 +34,15 @@ public class AdminService {
             adminSaved.setValorHora(valorHora);
             adminRepo.save(adminSaved);
             return adminSaved.getId();
+        }
+        throw new Exception("Nenhum admin com esse nome!");
+    }
+
+    public List<Veiculo> getVeiculo(String adminNome) throws Exception {
+        Optional<Admin> admin = adminRepo.findByNome(adminNome);
+        if (admin.isPresent()) {
+            Admin adminSaved = admin.get();
+            return adminSaved.getVeiculos();
         }
         throw new Exception("Nenhum admin com esse nome!");
     }

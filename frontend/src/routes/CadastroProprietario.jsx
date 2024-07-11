@@ -169,8 +169,9 @@ export default function ValidationTextFields() {
         if (!validate()) {
             return;
         }
+        const nomeAdmin = localStorage.getItem('nomeUsuario');
         const token = localStorage.getItem('token');
-        Axios.post(`http://localhost:8080/api/proprietario/`, proprietario , {
+        Axios.post(`http://localhost:8080/api/proprietario/${nomeAdmin}`, proprietario , {
             headers: {
                 'Authorization': `Bearer ${token}`,
             },
@@ -220,6 +221,7 @@ export default function ValidationTextFields() {
                         onChange={(e) => setproprietario({ ...proprietario, nome: e.target.value })}
                         error={!!errors.nome}
                         helperText={errors.nome}
+                        inputProps={{ maxLength: 50 }}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -230,6 +232,10 @@ export default function ValidationTextFields() {
                         onChange={(e) => setproprietario({ ...proprietario, cpf: e.target.value })}
                         error={!!errors.cpf}
                         helperText={errors.cpf}
+                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', maxLength: 11  }}
+                        onInput={(e) => {
+                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                        }}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -240,6 +246,7 @@ export default function ValidationTextFields() {
                         onChange={(e) => setproprietario({ ...proprietario, email: e.target.value })}
                         error={!!errors.email}
                         helperText={errors.email}
+                        inputProps={{ maxLength: 50 }}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -250,6 +257,10 @@ export default function ValidationTextFields() {
                         onChange={(e) => setproprietario({ ...proprietario, telefone: e.target.value })}
                         error={!!errors.telefone}
                         helperText={errors.telefone}
+                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', maxLength: 11  }}
+                        onInput={(e) => {
+                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                        }}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -260,6 +271,10 @@ export default function ValidationTextFields() {
                         onChange={handleCepChange}
                         error={!!errors.cep}
                         helperText={errors.cep}
+                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', maxLength: 8  }}
+                        onInput={(e) => {
+                            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                        }}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -270,6 +285,7 @@ export default function ValidationTextFields() {
                         onChange={(e) => setproprietario({ ...proprietario, endereco: e.target.value })}
                         error={!!errors.endereco}
                         helperText={errors.endereco}
+                        inputProps={{ maxLength: 50 }}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -280,6 +296,7 @@ export default function ValidationTextFields() {
                         onChange={(e) => setproprietario({ ...proprietario, numero: e.target.value })}
                         error={!!errors.numero}
                         helperText={errors.numero}
+                        maxLength={2}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>

@@ -12,6 +12,9 @@ import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
+import CheckIcon from '@mui/icons-material/Check';
+import { Link } from 'react-router-dom';
+import Alert from '@mui/material/Alert';
 import { useVeiculos } from '../VeiculosContext';
 import axios from 'axios';
 import { format } from 'date-fns';
@@ -25,6 +28,7 @@ const VeiculosList = () => {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [open, setOpen] = useState(false);
     const [veiculoSaida, setVeiculoSaida] = useState({});
+    const [alertVisible, setAlertVisible] = useState(false); // Estado para controlar a visibilidade do alerta
 
     const columns = [
         { id: 'placa', label: 'Placa', minWidth: 170 },
@@ -77,15 +81,15 @@ const VeiculosList = () => {
                     'Authorization': `Bearer ${token}`
                 }
             });
+            setAlertVisible(true); // Mostrar alerta
+
+            // Ocultar alerta após 2 segundos
+            setTimeout(() => {
+                setAlertVisible(false);
+            }, 2000);
         } catch (error) {
             console.error('Erro ao setar valor da hora:', error);
         }
-    };
-
-    const handleValorHoraChange = (event) => {
-        const novoValorHora = event.target.value;
-        setValorHora(novoValorHora);
-        setValorHoraByNome(novoValorHora);
     };
 
     const marcarSaidaVeiculo = async (id) => {
@@ -127,11 +131,14 @@ const VeiculosList = () => {
     const handleClose = () => setOpen(false);
 
     const formatarData = (dataIso) => {
-        return format(new Date(dataIso), 'dd/MM/yyyy HH:mm:ss');
+        const novaString = dataIso.slice(0, 26);
+        console.log(novaString);
+        return format(novaString, 'dd/MM/yyyy HH:mm:ss');
     };
 
     const valorFinal = (horaEntrada) => {
-        const dataEntrada = new Date(horaEntrada);
+        const novaString = String(horaEntrada).slice(0, 26);
+        const dataEntrada = new Date(novaString);
         const dataSaida = new Date();
         const diferenca = dataSaida - dataEntrada;
         const horas = Math.floor(diferenca / 3600000);
@@ -144,14 +151,28 @@ const VeiculosList = () => {
         <Paper sx={{ width: '75%', overflow: 'auto' }} className='Paper'>
             <div className='header'>
                 <h1>VEÍCULOS ESTACIONADOS</h1>
+                {alertVisible && (
+                    <Alert icon={<CheckIcon fontSize="inherit" />} severity="success">
+                        Seu Valor por Hora foi atualizado
+                    </Alert>
+                )}
                 <div className='valor-hora'>
-                    <Typography variant="h5" component="div">Valor da Hora:</Typography>
-                    <TextField
-                        type="number"
-                        value={valorHora}
-                        onChange={handleValorHoraChange}
-                        sx={{ ml: 2 }}
-                    />
+                    <div>
+                        <Typography variant="h5" component="div">Valor por Hora:</Typography>
+                        <TextField
+                            type="number"
+                            value={valorHora}
+                            onChange={(e) => setValorHora(e.target.value)}
+                            sx={{ ml: 2 }}
+                        />
+                    </div>
+
+                    <Button style={{
+                        marginTop: '40px',
+                        width: '100px',
+                        height: '40px',
+                        marginLeft: '20px',
+                    }} variant='outlined' onClick={() => setValorHoraByNome(valorHora)} >Confirmar</Button>
                 </div>
             </div>
             <TableContainer sx={{ maxHeight: 700 }}>
@@ -170,29 +191,37 @@ const VeiculosList = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {veiculos
-                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            .map((row, index) => (
-                                <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
-                                    {columns.map((column) => {
-                                        const value = column.id === 'horaEntrada' ? formatarData(row[column.id]) : row[column.id];
-                                        if (column.id === 'MarcarSaida') {
+                        {veiculos.length === 0 ? (
+                            <TableRow>
+                                <TableCell color='error' colSpan={columns.length} align="center">
+                                    Não há veículos cadastrados! { }
+                                    <Link to='/cadastro-veiculo'>Cadastre aqui!</Link>
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            veiculos
+                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                .map((row, index) => (
+                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                                        {columns.map((column) => {
+                                            const value = column.id === 'horaEntrada' ? formatarData(row[column.id]) : row[column.id];
+                                            if (column.id === 'MarcarSaida') {
+                                                return (
+                                                    <TableCell key={column.id} align="left" className={index % 2 === 0 ? 'Par' : 'Impar'}>
+                                                        <Button variant='contained' color="success" onClick={() => marcarSaida(row)}>Marcar Saída</Button>
+                                                    </TableCell>
+                                                );
+                                            }
+
                                             return (
                                                 <TableCell key={column.id} align="left" className={index % 2 === 0 ? 'Par' : 'Impar'}>
-                                                    <Button variant='contained' color="success" onClick={() => marcarSaida(row)}>Marcar Saída</Button>
+                                                    {value ? value.toString().toUpperCase() : '-'}
                                                 </TableCell>
                                             );
-                                        }
-
-                                        return (
-                                            <TableCell key={column.id} align="left" className={index % 2 === 0 ? 'Par' : 'Impar'}>
-                                                {value ? value.toString().toUpperCase() : '-'}
-                                            </TableCell>
-
-                                        );
-                                    })}
-                                </TableRow>
-                            ))}
+                                        })}
+                                    </TableRow>
+                                ))
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>

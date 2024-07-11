@@ -1,8 +1,6 @@
 package com.fabioacandrade.Gcars.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
 import javax.persistence.*;
@@ -10,7 +8,8 @@ import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -34,11 +33,28 @@ public class Admin {
     @Column(name = "valor_hora")
     private Integer valorHora;
 
-    @OneToMany(mappedBy = "admin", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "admin", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Veiculo> veiculos = new ArrayList<>();
+
+    @OneToMany(mappedBy = "admin", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Proprietario> proprietarios = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "admin_roles", joinColumns = @JoinColumn(name = "admin_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<Role> roles = new ArrayList<>();
+
+//    @Override
+//    public String toString() {
+//        return "Admin{" +
+//                "id=" + id +
+//                ", nome='" + nome + '\'' +
+//                ", email='" + email + '\'' +
+//                ", senha='" + senha + '\'' +
+//                ", valorHora=" + valorHora +
+//                ", veiculos=" + veiculos +
+//                ", proprietarios=" + proprietarios +
+//                ", roles=" + roles +
+//                '}';
+//    }
 }

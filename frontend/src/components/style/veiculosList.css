@@ -1,21 +1,27 @@
-.Par{
+.Par {
     background-color: #E3F2FD;
 }
-.Impar{
+
+.Impar {
     background-color: #BBDEFB;
 }
 
-.table-head{
+.table-head {
     background-color: #2196F3;
 }
 
-.Paper{
+.Paper {
     background-color: #E3F2FD;
     padding: 10px;
     margin: 10px;
-    border-radius: 10px;
+    border-radius: 30px;
     justify-self: end;
+    width: 190px;
+    background: rgb(236, 236, 236);
+    box-shadow: rgba(0, 0, 0, 0.8) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+
 }
+
 .header {
     display: flex;
     justify-content: space-between;
@@ -26,4 +32,6 @@
 .valor-hora {
     display: flex;
     align-items: center;
+    flex-grow: 0;
+    justify-content: space-around;
 }

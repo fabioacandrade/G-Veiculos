@@ -54,7 +54,9 @@ export default function SignInSide() {
       );
 
       if (response.status === 200) {
+
         const token = response.data.token;
+
         localStorage.setItem('token', token);
         localStorage.setItem('nomeUsuario', nome);
 
