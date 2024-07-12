@@ -131,13 +131,13 @@ const VeiculosList = () => {
     const handleClose = () => setOpen(false);
 
     const formatarData = (dataIso) => {
-        const novaString = dataIso.slice(0, 26);
+        const novaString = dataIso.slice(0, 23);
         console.log(novaString);
         return format(novaString, 'dd/MM/yyyy HH:mm:ss');
     };
 
     const valorFinal = (horaEntrada) => {
-        const novaString = String(horaEntrada).slice(0, 26);
+        const novaString = String(horaEntrada).slice(0, 23);
         const dataEntrada = new Date(novaString);
         const dataSaida = new Date();
         const diferenca = dataSaida - dataEntrada;

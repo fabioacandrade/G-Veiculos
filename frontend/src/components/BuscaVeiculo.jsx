@@ -92,7 +92,8 @@ export default function BuscaVeiculo() {
     }
 
     function formatarDataIso8601(dataIso) {
-        const data = new Date(dataIso);
+        const novaString = String(dataIso.slice(0, 23))
+        const data = new Date(novaString);
         const dia = data.getDate().toString().padStart(2, '0');
         const mes = (data.getMonth() + 1).toString().padStart(2, '0');
         const ano = data.getFullYear();
@@ -134,7 +135,7 @@ export default function BuscaVeiculo() {
                         <p>Placa: {veiculo.placa}</p>
                         <p>Cor: {veiculo.cor}</p>
                         <p>Ano: {veiculo.ano}</p>
-                        <p>Hora de Entrada: {formatarDataIso8601(veiculo.horaEntrada)}</p>
+                        <p>Ultima Hora de Entrada: {formatarDataIso8601(veiculo.horaEntrada)}</p>
                         <div className='proprietario'>
                             <h3>Proprietário</h3>
                             <p>Nome: {proprietario.nome}</p>

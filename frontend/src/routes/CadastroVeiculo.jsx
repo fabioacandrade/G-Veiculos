@@ -185,6 +185,7 @@ export default function ValidationTextFields() {
             valid = false;
         }
 
+
         if (!veiculo.proprietarioCPF.trim()) {
             newErrors.proprietarioCPF = 'O CPF do proprietário do veículo é obrigatório';
             valid = false;
@@ -195,8 +196,34 @@ export default function ValidationTextFields() {
             valid = false;
         }
 
+        if(!isProprietarioCadastrado(veiculo.proprietarioCPF)){
+            newErrors.proprietarioCPF = 'Cadastre o proprietário antes de cadastrar o veículo.';
+            valid = false;
+        }
+
         setErrors(newErrors);
         return valid;
+    };
+
+
+
+    const isProprietarioCadastrado = async (cpf) => {
+        try {
+            const token = localStorage.getItem('token');
+            const nomeUsuario = localStorage.getItem('nomeUsuario');
+            const response = await Axios.get(`http://localhost:8080/api/proprietario/cpf/${cpf}/${nomeUsuario}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            if(response.data.cpf === cpf){
+                console.log('response.data.cpf', response.data.cpf);
+                return true;
+            }
+        } catch (error) {
+            console.error('Proprietario não cadastrado', error);
+            return false;
+        }
     };
 
     const [fetchError, setFetchError] = useState('');

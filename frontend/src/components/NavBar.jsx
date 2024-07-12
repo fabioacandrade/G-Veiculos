@@ -91,7 +91,7 @@ function PrimaryAppBar({ toggleDrawer, toggleProfileDrawer }) {
                             open={Boolean(anchorEl)}
                             onClose={handleMenuClose}
                         >
-                            <MenuItem onClick={handleProfileClick}>Profile</MenuItem>
+                            <MenuItem onClick={handleProfileClick}>Perfil</MenuItem>
                             <MenuItem onClick={handleLogOutClick}>Log out</MenuItem>
                         </Menu>
                     </div>
