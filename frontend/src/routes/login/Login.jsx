@@ -143,10 +143,7 @@ export default function SignInSide() {
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
               />
-              <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Lembrar-me"
-              />
+              
               <Button
                 type="submit"
                 fullWidth
