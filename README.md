@@ -12,8 +12,8 @@ O GCars é um sistema de gerenciamento de estacionamento projetado para facilita
 
 ## Tecnologias Utilizadas
 
-- **Backend**: Spring Boot
-- **Frontend**: React, HTML, CSS
+- **Backend**: Spring Boot, JWT AUTH
+- **Frontend**: ReactJS, HTML, CSS
 - **Banco de Dados**:  MySQL
 
 ## Estrutura do Projeto
